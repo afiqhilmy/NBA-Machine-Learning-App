@@ -53,16 +53,13 @@ st.markdown("""
         margin-bottom: 20px;
     }
 
-    /* Header Container for Flexbox Alignment */
-    .header-container {
+    .header-text {
         display: flex;
-        align-items: center;
-        gap: 15px;
-        margin-bottom: 5px;
+        flex-direction: column;
     }
 
     .header-logo {
-        height: 52px;
+        height: 90px; /* Scaled logo to fill right side box */
         width: auto;
         object-fit: contain;
     }
@@ -74,7 +71,7 @@ st.markdown("""
         color: #1D428A; /* NBA Blue */
         margin: 0; 
         letter-spacing: 1.5px;
-        line-height: 1;
+        line-height: 1.1;
     }
 
     /* Sub-Header */
@@ -82,7 +79,8 @@ st.markdown("""
         font-family: 'Bebas Neue', sans-serif !important;
         font-size: 20px; 
         color: #64748B; 
-        margin-bottom: 25px; 
+        margin-top: 5px; 
+        margin-bottom: 0px;
     }
 
     /* Metric Values & Labels */
@@ -114,22 +112,24 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-# Render Header with Logo
+# Render Header with Logo on the Right
 if logo_b64:
     logo_img_tag = f'<img src="data:image/png;base64,{logo_b64}" class="header-logo" alt="NBA Logo">'
 else:
-    logo_img_tag = '<span style="font-size: 40px;">🏀</span>'
+    logo_img_tag = '<span style="font-size: 60px;">🏀</span>'
 
 st.markdown(
     f'''
     <div class="header-container">
+        <div class="header-text">
+            <h1 class="main-header">NBA EXPECTED POINTS PER GAME (XPPG) PREDICTION</h1>
+            <div class="sub-header">DECISION-SUPPORT SYSTEM FOR PLAYER BASELINE EVALUATION AND PLANNING PROJECTIONS.</div>
+        </div>
         {logo_img_tag}
-        <h1 class="main-header">NBA EXPECTED POINTS PER GAME (XPPG) PREDICTION</h1>
     </div>
     ''', 
     unsafe_allow_html=True
 )
-st.markdown('<div class="sub-header">DECISION-SUPPORT SYSTEM FOR PLAYER BASELINE EVALUATION AND PLANNING PROJECTIONS.</div>', unsafe_allow_html=True)
 
 # --- 2. DATA GENERATOR & MODEL PIPELINE ---
 @st.cache_data
@@ -324,7 +324,7 @@ with page_tab1:
                 season_defaults[feat] = global_defaults.get(feat, 0.0)
         
         st.markdown("---")
-        st.markdown(f"### 2. Historical Career KPI: {selected_player}")
+        st.markdown(f"### 2. Historical Career KPIs: {selected_player}")
         
         player_df = player_df.copy()
         if 'Total_PTS' not in player_df.columns and {'PPG', 'GP'}.issubset(player_df.columns):
@@ -394,11 +394,11 @@ with page_tab1:
         
         res_col1, res_col2, res_col3 = st.columns(3)
         with res_col1:
-            st.metric("Expected Points Per Game (xPPG)", f"{predicted_ppg:.1f} PPG")
+            st.metric("Expected Baseline (xPPG)", f"{predicted_ppg:.1f} PPG")
         with res_col2:
-            st.metric("Actual Points Per Game", f"{actual_ppg:.1f} PPG")
+            st.metric("Actual Baseline", f"{actual_ppg:.1f} PPG")
         with res_col3:
-            st.metric("Points Over Expected", f"{xpts:+.1f} PPG")
+            st.metric("Points Over Expected (xPTS)", f"{xpts:+.1f} PPG")
             
         if xpts > 1.2:
             st.success("🔥 **Performance Status:** OUTPERFORMED baseline (Hyper-Efficient Scorer)")
