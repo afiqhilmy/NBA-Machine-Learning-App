@@ -118,37 +118,6 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-# --- 3. TOP SPLIT LAYOUT (HEADER WATERMARK ADDED) ---
-top_left, top_right = st.columns([3, 1], gap="medium")
-
-with top_left:
-    if logo_b64:
-        small_logo_tag = f'<img src="data:image/png;base64,{logo_b64}" style="height: 40px; margin-right: 12px; vertical-align: middle;">'
-    else:
-        small_logo_tag = '<span style="font-size: 38px; margin-right: 10px; vertical-align: middle;">🏀</span>'
-
-    # Render Header Watermark right above title
-    st.markdown(
-        f'''
-        <div class="header-watermark">ENGINEERED BY AFIQ HILMY | BASKETBALL ANALYTICS & PREDICTIVE MODELING</div>
-        <div style="display: flex; align-items: center; margin-bottom: 6px;">
-            {small_logo_tag}
-            <h1 class="main-header">NBA EXPECTED POINTS PER GAME (XPPG) PREDICTION</h1>
-        </div>
-        <div class="sub-header" style="margin-bottom: 20px;">
-            DECISION-SUPPORT SYSTEM FOR PLAYER BASELINE EVALUATION AND PLANNING PROJECTIONS.
-        </div>
-        ''', 
-        unsafe_allow_html=True
-    )
-
-    st.markdown("### ⚙️ SELECT MACHINE LEARNING MODEL")
-    selected_model_name = st.radio(
-        "CHOOSE ALGORITHM FOR EXPECTED SCORING BASELINE PREDICTION:",
-        ["Linear Regression", "Random Forest", "XGBoost"],
-        horizontal=True
-    )
-
 # --- 2. DATA GENERATOR & MODEL PIPELINE ---
 @st.cache_data
 def get_dataset_and_models():
@@ -273,28 +242,35 @@ if csv_available:
     CSV_PLAYERS_BY_TEAM = {code: sorted(df_csv[df_csv['team'] == code]['player'].unique()) for code in csv_teams}
 
 
-# --- 3. TOP SPLIT LAYOUT (LEFT HEADER + RIGHT BIG LOGO) ---
+# --- 3. TOP SPLIT LAYOUT (HEADER WATERMARK ADDED) ---
 top_left, top_right = st.columns([3, 1], gap="medium")
 
 with top_left:
-    # Small inline logo tag for the title
     if logo_b64:
-        small_logo_tag = f'<img src="data:image/png;base64,{logo_b64}" style="height: 45px; margin-right: 12px; vertical-align: middle;">'
+        small_logo_tag = f'<img src="data:image/png;base64,{logo_b64}" style="height: 40px; margin-right: 12px; vertical-align: middle;">'
     else:
         small_logo_tag = '<span style="font-size: 38px; margin-right: 10px; vertical-align: middle;">🏀</span>'
 
-    # Title & Subtitle block
+    # Render Header Watermark right above title
     st.markdown(
         f'''
+        <div class="header-watermark">ENGINEERED BY AFIQ HILMY | BASKETBALL ANALYTICS & PREDICTIVE MODELING</div>
         <div style="display: flex; align-items: center; margin-bottom: 6px;">
             {small_logo_tag}
             <h1 class="main-header">NBA EXPECTED POINTS PER GAME (XPPG) PREDICTION</h1>
         </div>
-        <div class="sub-header" style="margin-bottom: 25px;">
+        <div class="sub-header" style="margin-bottom: 20px;">
             DECISION-SUPPORT SYSTEM FOR PLAYER BASELINE EVALUATION AND PLANNING PROJECTIONS.
         </div>
         ''', 
         unsafe_allow_html=True
+    )
+
+    st.markdown("### ⚙️ SELECT MACHINE LEARNING MODEL")
+    selected_model_name = st.radio(
+        "CHOOSE ALGORITHM FOR EXPECTED SCORING BASELINE PREDICTION:",
+        ["Linear Regression", "Random Forest", "XGBoost"],
+        horizontal=True
     )
 
     # Model Selection block
