@@ -79,8 +79,8 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-st.markdown('<div class="main-header">🏀 NBA Expected Points Per Game (xPPG) Analytics</div>', unsafe_allow_html=True)
-st.markdown('<div class="sub-header">Decision-support system for player baseline evaluation and scouting projections.</div>', unsafe_allow_html=True)
+st.markdown('<div class="main-header">🏀 NBA Expected Points Per Game (xPPG) Prediction</div>', unsafe_allow_html=True)
+st.markdown('<div class="sub-header">Decision-support system for player baseline evaluation and planning projections.</div>', unsafe_allow_html=True)
 
 # --- 2. DATA GENERATOR & MODEL PIPELINE ---
 @st.cache_data
