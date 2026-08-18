@@ -59,7 +59,7 @@ st.markdown("""
     }
 
     .header-logo {
-        height: 160px; /* Scaled logo to fill right side box */
+        height: 300px; /* Scaled logo to fill right side box */
         width: auto;
         object-fit: contain;
     }
