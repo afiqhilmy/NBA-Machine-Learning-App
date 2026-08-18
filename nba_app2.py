@@ -27,7 +27,7 @@ def get_image_base64(image_path):
 
 logo_b64 = get_image_base64("nbalogo.png")
 
-# Custom CSS applying 'Bebas Neue' globally to all text elements & watermarks
+# Custom CSS applying 'Bebas Neue' globally to all text elements, watermarks & highlighted metric cards
 st.markdown("""
     <style>
     /* Import Bebas Neue Google Font */
@@ -44,7 +44,7 @@ st.markdown("""
         background-color: #F8FAFC; /* Off-White Slate Background */
     }
 
-/* Header Watermark Styling with Bottom Line */
+    /* Header Watermark Styling with Bottom Line */
     .header-watermark {
         font-size: 14px !important;
         color: #94A3B8 !important; /* Muted Slate */
@@ -74,6 +74,42 @@ st.markdown("""
         color: #64748B; 
         margin-top: 6px; 
         margin-bottom: 0px;
+    }
+
+    /* Highlighted Key Metric Box */
+    .metric-card-highlight {
+        background: linear-gradient(135deg, #1D428A 0%, #0F2A60 100%);
+        border-radius: 10px;
+        padding: 16px 22px;
+        color: #FFFFFF !important;
+        box-shadow: 0 4px 14px rgba(29, 66, 138, 0.3);
+        border-left: 6px solid #C8102E; /* NBA Red Accent Line */
+        margin-bottom: 10px;
+    }
+    .metric-card-highlight .metric-label {
+        font-size: 16px !important;
+        color: #CBD5E1 !important; /* Soft Slate text */
+        letter-spacing: 1.5px;
+        margin-bottom: 2px;
+        text-transform: uppercase;
+    }
+    .metric-card-highlight .metric-value {
+        font-size: 44px !important;
+        font-weight: bold;
+        color: #FFFFFF !important;
+        line-height: 1.1;
+        letter-spacing: 1px;
+    }
+    .metric-card-highlight .metric-badge {
+        display: inline-block;
+        background-color: #C8102E; /* NBA Red Badge */
+        color: #FFFFFF;
+        font-size: 11px;
+        padding: 2px 8px;
+        border-radius: 4px;
+        letter-spacing: 1px;
+        margin-left: 8px;
+        vertical-align: middle;
     }
 
     /* Metric Values & Labels */
@@ -258,7 +294,7 @@ with top_left:
     # Watermark, Title, and Subtitle block
     st.markdown(
         f'''
-        <div class="header-watermark">BASKETBALL ANALYTICS AND MODELLING BY AFIQ HILMY | SPORTS ANALYTICS ENTHUSIAST</div>
+        <div class="header-watermark">PREDICTIVE PLAYER ANALYTICS DASHBOARD BY AFIQ HILMY | SPORTS ANALYTICS ENTHUSIAST</div>
         <div style="display: flex; align-items: center; margin-bottom: 6px;">
             {small_logo_tag}
             <h1 class="main-header">NBA EXPECTED POINTS PER GAME (XPPG) PREDICTION</h1>
@@ -420,7 +456,15 @@ with page_tab1:
         
         res_col1, res_col2, res_col3 = st.columns(3)
         with res_col1:
-            st.metric("Expected Baseline (xPPG)", f"{predicted_ppg:.1f} PPG")
+            st.markdown(
+                f'''
+                <div class="metric-card-highlight">
+                    <div class="metric-label">EXPECTED BASELINE (XPPG) <span class="metric-badge">PRIMARY</span></div>
+                    <div class="metric-value">{predicted_ppg:.1f} PPG</div>
+                </div>
+                ''',
+                unsafe_allow_html=True
+            )
         with res_col2:
             st.metric("Actual Baseline", f"{actual_ppg:.1f} PPG")
         with res_col3:
@@ -492,7 +536,15 @@ with page_tab2:
     
     c_out1, c_out2 = st.columns(2)
     with c_out1:
-        st.metric("Projected Expected PPG (xPPG)", f"{scout_pred_ppg:.1f} PPG")
+        st.markdown(
+            f'''
+            <div class="metric-card-highlight">
+                <div class="metric-label">PROJECTED EXPECTED PPG (XPPG) <span class="metric-badge">PRIMARY TARGET</span></div>
+                <div class="metric-value">{scout_pred_ppg:.1f} PPG</div>
+            </div>
+            ''',
+            unsafe_allow_html=True
+        )
     with c_out2:
         projected_total_points = int(scout_pred_ppg * scout_gp)
         st.metric("Projected Total Season Points", f"{projected_total_points:,} PTS ({scout_gp} Games)")
