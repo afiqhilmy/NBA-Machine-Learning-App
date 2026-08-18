@@ -254,7 +254,7 @@ with top_right:
         st.markdown(
             f'''
             <div style="display: flex; justify-content: center; align-items: center; height: 100%; min-height: 200px;">
-                <img src="data:image/png;base64,{logo_b64}" style="height: 180px; width: auto; object-fit: contain;" alt="NBA Logo Large">
+                <img src="data:image/png;base64,{logo_b64}" style="height: 200px; width: auto; object-fit: contain;" alt="NBA Logo Large">
             </div>
             ''', 
             unsafe_allow_html=True
