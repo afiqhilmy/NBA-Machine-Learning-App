@@ -44,14 +44,17 @@ st.markdown("""
         background-color: #F8FAFC; /* Off-White Slate Background */
     }
 
-    /* Header Watermark Styling */
+/* Header Watermark Styling with Bottom Line */
     .header-watermark {
         font-size: 14px !important;
         color: #94A3B8 !important; /* Muted Slate */
         letter-spacing: 2px !important;
         text-transform: uppercase;
-        margin-bottom: 4px;
+        margin-bottom: 12px;
         font-weight: 600;
+        border-bottom: 1px solid #CBD5E1; /* Separator line */
+        padding-bottom: 6px; /* Space between text and line */
+        width: 100%;
     }
 
     /* Header Title Formatting */
