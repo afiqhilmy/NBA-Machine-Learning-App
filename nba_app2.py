@@ -1,6 +1,7 @@
 import streamlit as st
 import pandas as pd
 import numpy as np
+import plotly.graph_objects as go
 from sklearn.linear_model import LinearRegression
 from sklearn.ensemble import RandomForestRegressor
 from xgboost import XGBRegressor
@@ -16,12 +17,57 @@ st.set_page_config(
     layout="wide"
 )
 
-# Custom CSS for clean UI styling
+# Custom CSS for clean UI styling and NBA Theme Customization
 st.markdown("""
     <style>
-    .main-header { font-size: 32px; font-weight: bold; color: #1E293B; margin-bottom: 5px; }
-    .sub-header { font-size: 16px; color: #64748B; margin-bottom: 25px; }
-    .metric-card { background-color: #F8FAFC; border: 1px solid #E2E8F0; padding: 15px; border-radius: 8px; }
+    /* Import custom fonts from Google */
+    @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;600&family=Roboto+Mono:wght@500&display=swap');
+
+    /* Global Background & Default Text */
+    .stApp {
+        background-color: #F8FAFC; /* Off-White Slate Background */
+    }
+    
+    html, body, [class*="css"] {
+        font-family: 'Inter', sans-serif;
+        color: #0F172A; /* Midnight Slate Text */
+    }
+
+    /* Custom Header Styling */
+    .main-header { 
+        font-family: 'Bebas Neue', sans-serif; 
+        font-size: 42px; 
+        color: #1D428A; /* NBA Blue */
+        margin-bottom: 5px; 
+        letter-spacing: 1.5px;
+    }
+    .sub-header { 
+        font-family: 'Inter', sans-serif;
+        font-size: 16px; 
+        color: #64748B; 
+        margin-bottom: 25px; 
+    }
+
+    /* Metric Values and Monospace Numbers */
+    [data-testid="stMetricValue"] {
+        font-family: 'Roboto Mono', monospace;
+        color: #1D428A !important; /* NBA Blue for main metrics */
+    }
+    
+    /* Streamlit Tabs Styling */
+    .stTabs [data-baseweb="tab-list"] {
+        gap: 20px;
+    }
+    .stTabs [data-baseweb="tab"] {
+        font-family: 'Bebas Neue', sans-serif;
+        font-size: 20px;
+        letter-spacing: 1px;
+        color: #0F172A;
+    }
+    .stTabs [aria-selected="true"] {
+        color: #C8102E !important; /* NBA Red for active tab */
+        border-bottom-color: #C8102E !important;
+    }
     </style>
 """, unsafe_allow_html=True)
 
