@@ -459,16 +459,16 @@ with page_tab1:
             st.markdown(
                 f'''
                 <div class="metric-card-highlight">
-                    <div class="metric-label">EXPECTED BASELINE (XPPG) <span class="metric-badge">PRIMARY</span></div>
+                    <div class="metric-label">EXPECTED POINTS PER GAME (XPPG) <span class="metric-badge">PRIMARY</span></div>
                     <div class="metric-value">{predicted_ppg:.1f} PPG</div>
                 </div>
                 ''',
                 unsafe_allow_html=True
             )
         with res_col2:
-            st.metric("Actual Baseline", f"{actual_ppg:.1f} PPG")
+            st.metric("Actual Points Per Game", f"{actual_ppg:.1f} PPG")
         with res_col3:
-            st.metric("Points Over Expected (xPTS)", f"{xpts:+.1f} PPG")
+            st.metric("Points Over Expected", f"{xpts:+.1f} PPG")
             
         if xpts > 1.2:
             st.success("🔥 **Performance Status:** OUTPERFORMED baseline (Hyper-Efficient Scorer)")
