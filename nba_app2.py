@@ -1,6 +1,7 @@
 import streamlit as st
 import pandas as pd
 import numpy as np
+import plotly.graph_objects as go
 from sklearn.linear_model import LinearRegression
 from sklearn.ensemble import RandomForestRegressor
 from xgboost import XGBRegressor
@@ -8,6 +9,7 @@ from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
 from sklearn.preprocessing import StandardScaler
 from sklearn.model_selection import GroupShuffleSplit
 import os
+import base64
 
 # --- 1. PAGE CONFIGURATION & STYLING ---
 st.set_page_config(
@@ -42,13 +44,28 @@ st.markdown("""
         background-color: #F8FAFC; /* Off-White Slate Background */
     }
 
+    /* Header Container for Flexbox Alignment */
+    .header-container {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        margin-bottom: 5px;
+    }
+
+    .header-logo {
+        height: 52px;
+        width: auto;
+        object-fit: contain;
+    }
+
     /* Main Header Title */
     .main-header { 
         font-family: 'Bebas Neue', sans-serif !important; 
         font-size: 46px; 
         color: #1D428A; /* NBA Blue */
-        margin-bottom: 0px; 
+        margin: 0; 
         letter-spacing: 1.5px;
+        line-height: 1;
     }
 
     /* Sub-Header */
@@ -88,8 +105,22 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-st.markdown('<div class="main-header">🏀 NBA Expected Points Per Game (xPPG) Prediction</div>', unsafe_allow_html=True)
-st.markdown('<div class="sub-header">Decision-support system for player baseline evaluation and planning projections.</div>', unsafe_allow_html=True)
+# Render Header with Logo
+if logo_b64:
+    logo_img_tag = f'<img src="data:image/png;base64,{logo_b64}" class="header-logo" alt="NBA Logo">'
+else:
+    logo_img_tag = '<span style="font-size: 40px;">🏀</span>'
+
+st.markdown(
+    f'''
+    <div class="header-container">
+        {logo_img_tag}
+        <h1 class="main-header">NBA EXPECTED POINTS PER GAME (XPPG) PREDICTION</h1>
+    </div>
+    ''', 
+    unsafe_allow_html=True
+)
+st.markdown('<div class="sub-header">DECISION-SUPPORT SYSTEM FOR PLAYER BASELINE EVALUATION AND PLANNING PROJECTIONS.</div>', unsafe_allow_html=True)
 
 # --- 2. DATA GENERATOR & MODEL PIPELINE ---
 @st.cache_data
@@ -100,21 +131,16 @@ def get_dataset_and_models():
     """
     np.random.seed(42)
 
-    # Define feature columns expected by the model
     feature_cols = ['GP', 'MPG', 'FGA_pg', '3PA_pg', 'FTA_pg', 'FG%', '3P%', 'FT%', 'APG', 'RPG', 'TOPG']
 
-    # Try to load real dataset if present; otherwise fall back to synthetic generation
     try:
         df = pd.read_csv('nba_player_seasons_processed.csv')
-        # Ensure required columns exist
         required = set(feature_cols + ['PPG', 'team', 'player', 'season'])
         if not required.issubset(df.columns):
             raise ValueError('CSV missing required columns')
-        # Keep only needed columns (preserve extra for display)
         df = df.copy()
         teams = sorted(df['team'].dropna().unique())
     except Exception:
-        # Fallback: synthetic data
         teams = [
             'ATL', 'BOS', 'BKN', 'CHA', 'CHI', 'CLE', 'DAL', 'DEN', 'DET', 'GSW',
             'HOU', 'IND', 'LAC', 'LAL', 'MEM', 'MIA', 'MIL', 'MIN', 'NOP', 'NYK',
@@ -160,10 +186,9 @@ def get_dataset_and_models():
                 'TOPG': topg
             })
         df = pd.DataFrame(data)
-    # Prepare feature matrix and labels
+
     X = df[feature_cols]
     y = df['PPG']
-    # Use player name for grouping so UI selection by player name aligns with splits
     groups = df['player']
     
     gss = GroupShuffleSplit(n_splits=1, test_size=0.2, random_state=42)
@@ -174,7 +199,6 @@ def get_dataset_and_models():
     X_test_scaled = scaler.transform(X.iloc[test_idx])
     y_train, y_test = y.iloc[train_idx], y.iloc[test_idx]
     
-    # Train 3 models
     models = {
         'Linear Regression': LinearRegression(),
         'Random Forest': RandomForestRegressor(n_estimators=100, max_depth=6, random_state=42),
@@ -192,14 +216,12 @@ def get_dataset_and_models():
         
     return df, models, scaler, feature_cols, eval_metrics, teams
 
-# Try to read CSV upfront to prefer real player names in the UI
 csv_path = 'nba_player_seasons_processed.csv'
 csv_available = False
 df_csv = None
 if os.path.exists(csv_path):
     try:
         df_csv = pd.read_csv(csv_path)
-        # minimal validation
         if {'player', 'team', 'season'}.issubset(df_csv.columns):
             csv_available = True
     except Exception:
@@ -207,7 +229,6 @@ if os.path.exists(csv_path):
 
 df, models, scaler, feature_cols, eval_metrics, all_teams = get_dataset_and_models()
 
-# Mapping from team code to full team name
 TEAM_FULL_NAMES = {
     'ATL': 'Atlanta Hawks', 'BOS': 'Boston Celtics', 'BKN': 'Brooklyn Nets', 'CHA': 'Charlotte Hornets',
     'CHI': 'Chicago Bulls', 'CLE': 'Cleveland Cavaliers', 'DAL': 'Dallas Mavericks', 'DEN': 'Denver Nuggets',
@@ -219,19 +240,14 @@ TEAM_FULL_NAMES = {
     'UTA': 'Utah Jazz', 'WAS': 'Washington Wizards'
 }
 
-# Display names and reverse lookup
 TEAM_DISPLAY_NAMES = [TEAM_FULL_NAMES.get(code, code) for code in all_teams]
 TEAM_CODE_BY_NAME = {v: k for k, v in TEAM_FULL_NAMES.items()}
 
-# If CSV is available, build team/player lists from it for the UI so names are real
 if csv_available:
     csv_teams = sorted(df_csv['team'].dropna().unique())
     CSV_TEAM_DISPLAY = [TEAM_FULL_NAMES.get(code, code) for code in csv_teams]
     CSV_TEAM_CODE_BY_NAME = {v: k for k, v in TEAM_FULL_NAMES.items()}
     CSV_PLAYERS_BY_TEAM = {code: sorted(df_csv[df_csv['team'] == code]['player'].unique()) for code in csv_teams}
-
-# UI controls: allow forcing a reload from CSV (clears cache and reruns)
-# (Sidebar reload button and data-source info removed)
 
 # --- 3. GLOBAL MODEL SELECTION (MAIN BODY) ---
 st.markdown("### ⚙️ Select Machine Learning Model")
@@ -249,7 +265,6 @@ st.markdown("---")
 # --- 4. MAIN PAGE NAVIGATION ---
 page_tab1, page_tab2 = st.tabs(["👤 Specific Player Analysis", "🔮 General Scouting & Custom Player"])
 
-# Helper function to render model performance card
 def render_model_eval_card(name, metrics):
     st.markdown("#### 📐 Model Performance Metrics")
     c1, c2, c3 = st.columns(3)
@@ -282,8 +297,7 @@ with page_tab1:
         else:
             player_df = df[(df['team'] == selected_team) & (df['player'] == selected_player)].sort_values('season', ascending=False)
         latest_season_data = player_df.iloc[0]
-        # Build safe defaults for season features (use player's latest season when available,
-        # otherwise fall back to dataset mean or sensible global defaults)
+
         global_defaults = {'MPG':25.0,'FGA_pg':10.0,'3PA_pg':4.0,'FTA_pg':3.0,'FG%':0.45,'3P%':0.35,'FT%':0.78,'APG':3.0,'RPG':4.0,'TOPG':1.8}
         season_defaults = {}
         for feat in feature_cols:
@@ -303,17 +317,14 @@ with page_tab1:
         st.markdown("---")
         st.markdown(f"### 2. Historical Career KPIs: {selected_player}")
         
-        # Ensure Total_PTS exists (compute from PPG * GP when missing)
         player_df = player_df.copy()
         if 'Total_PTS' not in player_df.columns and {'PPG', 'GP'}.issubset(player_df.columns):
             player_df['Total_PTS'] = (player_df['PPG'] * player_df['GP']).round().astype(int)
 
-        # Display Season KPI Table (show full team names)
         cols_to_show = [c for c in ['season', 'team', 'Total_PTS', 'PPG', 'MPG', 'GP'] if c in player_df.columns]
         kpi_display = player_df[cols_to_show].copy()
         if 'team' in kpi_display.columns:
             kpi_display['team'] = kpi_display['team'].map(TEAM_FULL_NAMES)
-        # Rename columns for display (only for those present)
         rename_map = {}
         if 'season' in kpi_display.columns: rename_map['season'] = 'Season'
         if 'team' in kpi_display.columns: rename_map['team'] = 'Team'
@@ -328,7 +339,6 @@ with page_tab1:
         st.markdown("### 3. Input Player Workload & Metrics")
         st.info("Inputs default to the player's most recent season baseline. Adjust features to simulate scenarios.")
         
-        # Input 1: Games Played FIRST
         input_gp = st.number_input(
             "1. Games Played (GP)", 
             min_value=1, max_value=82, 
@@ -336,7 +346,6 @@ with page_tab1:
             step=1
         )
         
-        # Other Features Layout
         st.markdown("##### Workload & Secondary Stats")
         col_w1, col_w2, col_w3 = st.columns(3)
         with col_w1:
@@ -359,8 +368,6 @@ with page_tab1:
         with col_e3:
             input_ft_pct = st.number_input("Free Throw % (0-100)", 0.0, 100.0, float(season_defaults.get('FT%',0.78)) * 100.0, 0.1, format="%.1f")
 
-        # Assemble Input Array
-        # Convert percent inputs (0-100) to decimal (0-1) for the model
         input_dict = {
             'GP': input_gp, 'MPG': input_mpg, 'FGA_pg': input_fga, '3PA_pg': input_3pa,
             'FTA_pg': input_fta, 'FG%': input_fg_pct / 100.0, '3P%': input_3p_pct / 100.0, 'FT%': input_ft_pct / 100.0,
@@ -384,7 +391,6 @@ with page_tab1:
         with res_col3:
             st.metric("Points Over Expected (xPTS)", f"{xpts:+.1f} PPG")
             
-        # Performance Badge Evaluation
         if xpts > 1.2:
             st.success("🔥 **Performance Status:** OUTPERFORMED baseline (Hyper-Efficient Scorer)")
         elif xpts < -1.2:
@@ -406,7 +412,6 @@ with page_tab2:
     st.markdown("---")
     st.markdown("### 2. Key In Custom / Hypothetical Player Workload")
     
-    # Input 1: Games Played FIRST
     scout_gp = st.number_input(
         "1. Projected Games Played (GP)", 
         min_value=1, max_value=82, 
@@ -437,8 +442,6 @@ with page_tab2:
     with sc_e3:
         scout_ft_pct = st.number_input("Free Throw % (0-100)", 0.0, 100.0, 80.0, 0.1, format="%.1f", key="scout_ft")
 
-    # Predict Custom Player xPPG
-    # Convert percent inputs (0-100) to decimal (0-1) for the model
     scout_dict = {
         'GP': scout_gp, 'MPG': scout_mpg, 'FGA_pg': scout_fga, '3PA_pg': scout_3pa,
         'FTA_pg': scout_fta, 'FG%': scout_fg_pct / 100.0, '3P%': scout_3p_pct / 100.0, 'FT%': scout_ft_pct / 100.0,
