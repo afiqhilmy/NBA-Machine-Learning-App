@@ -44,30 +44,10 @@ st.markdown("""
         background-color: #F8FAFC; /* Off-White Slate Background */
     }
 
-    /* Flexbox Header Container to push Logo to far right */
-    .header-container {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        width: 100%;
-        margin-bottom: 20px;
-    }
-
-    .header-text {
-        display: flex;
-        flex-direction: column;
-    }
-
-    .header-logo {
-        height: 300px; /* Scaled logo to fill right side box */
-        width: auto;
-        object-fit: contain;
-    }
-
-    /* Main Header Title */
+    /* Header Title Formatting */
     .main-header { 
         font-family: 'Bebas Neue', sans-serif !important; 
-        font-size: 46px; 
+        font-size: 42px; 
         color: #1D428A; /* NBA Blue */
         margin: 0; 
         letter-spacing: 1.5px;
@@ -79,7 +59,7 @@ st.markdown("""
         font-family: 'Bebas Neue', sans-serif !important;
         font-size: 20px; 
         color: #64748B; 
-        margin-top: 5px; 
+        margin-top: 6px; 
         margin-bottom: 0px;
     }
 
@@ -112,32 +92,9 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-# Render Header with Logo on the Right
-if logo_b64:
-    logo_img_tag = f'<img src="data:image/png;base64,{logo_b64}" class="header-logo" alt="NBA Logo">'
-else:
-    logo_img_tag = '<span style="font-size: 60px;">🏀</span>'
-
-st.markdown(
-    f'''
-    <div class="header-container">
-        <div class="header-text">
-            <h1 class="main-header">NBA EXPECTED POINTS PER GAME (XPPG) PREDICTION</h1>
-            <div class="sub-header">DECISION-SUPPORT SYSTEM FOR PLAYER BASELINE EVALUATION AND PLANNING PROJECTIONS.</div>
-        </div>
-        {logo_img_tag}
-    </div>
-    ''', 
-    unsafe_allow_html=True
-)
-
 # --- 2. DATA GENERATOR & MODEL PIPELINE ---
 @st.cache_data
 def get_dataset_and_models():
-    """
-    Generates synthetic benchmark dataset matching NBA player-season distributions
-    and trains the three candidate models if external CSV is missing.
-    """
     np.random.seed(42)
 
     feature_cols = ['GP', 'MPG', 'FGA_pg', '3PA_pg', 'FTA_pg', 'FG%', '3P%', 'FT%', 'APG', 'RPG', 'TOPG']
@@ -258,13 +215,52 @@ if csv_available:
     CSV_TEAM_CODE_BY_NAME = {v: k for k, v in TEAM_FULL_NAMES.items()}
     CSV_PLAYERS_BY_TEAM = {code: sorted(df_csv[df_csv['team'] == code]['player'].unique()) for code in csv_teams}
 
-# --- 3. GLOBAL MODEL SELECTION (MAIN BODY) ---
-st.markdown("### ⚙️ Select Machine Learning Model")
-selected_model_name = st.radio(
-    "Choose algorithm for expected scoring baseline prediction:",
-    ["Linear Regression", "Random Forest", "XGBoost"],
-    horizontal=True
-)
+
+# --- 3. TOP SPLIT LAYOUT (LEFT HEADER + RIGHT BIG LOGO) ---
+top_left, top_right = st.columns([3, 1], gap="medium")
+
+with top_left:
+    # Small inline logo tag for the title
+    if logo_b64:
+        small_logo_tag = f'<img src="data:image/png;base64,{logo_b64}" style="height: 45px; margin-right: 12px; vertical-align: middle;">'
+    else:
+        small_logo_tag = '<span style="font-size: 38px; margin-right: 10px; vertical-align: middle;">🏀</span>'
+
+    # Title & Subtitle block
+    st.markdown(
+        f'''
+        <div style="display: flex; align-items: center; margin-bottom: 6px;">
+            {small_logo_tag}
+            <h1 class="main-header">NBA EXPECTED POINTS PER GAME (XPPG) PREDICTION</h1>
+        </div>
+        <div class="sub-header" style="margin-bottom: 25px;">
+            DECISION-SUPPORT SYSTEM FOR PLAYER BASELINE EVALUATION AND PLANNING PROJECTIONS.
+        </div>
+        ''', 
+        unsafe_allow_html=True
+    )
+
+    # Model Selection block
+    st.markdown("### ⚙️ SELECT MACHINE LEARNING MODEL")
+    selected_model_name = st.radio(
+        "CHOOSE ALGORITHM FOR EXPECTED SCORING BASELINE PREDICTION:",
+        ["Linear Regression", "Random Forest", "XGBoost"],
+        horizontal=True
+    )
+
+with top_right:
+    # Large logo on the right side spanning the top section height
+    if logo_b64:
+        st.markdown(
+            f'''
+            <div style="display: flex; justify-content: center; align-items: center; height: 100%; min-height: 200px;">
+                <img src="data:image/png;base64,{logo_b64}" style="height: 180px; width: auto; object-fit: contain;" alt="NBA Logo Large">
+            </div>
+            ''', 
+            unsafe_allow_html=True
+        )
+    else:
+        st.markdown('<div style="display: flex; justify-content: center; align-items: center; height: 100%; font-size: 110px;">🏀</div>', unsafe_allow_html=True)
 
 active_model = models[selected_model_name]
 active_metrics = eval_metrics[selected_model_name]
