@@ -27,7 +27,7 @@ def get_image_base64(image_path):
 
 logo_b64 = get_image_base64("nbalogo.png")
 
-# Custom CSS applying 'Bebas Neue' globally to all text elements
+# Custom CSS applying 'Bebas Neue' globally to all text elements & watermarks
 st.markdown("""
     <style>
     /* Import Bebas Neue Google Font */
@@ -42,6 +42,16 @@ st.markdown("""
     /* Global Background */
     .stApp {
         background-color: #F8FAFC; /* Off-White Slate Background */
+    }
+
+    /* Header Watermark Styling */
+    .header-watermark {
+        font-size: 14px !important;
+        color: #94A3B8 !important; /* Muted Slate */
+        letter-spacing: 2px !important;
+        text-transform: uppercase;
+        margin-bottom: 4px;
+        font-weight: 600;
     }
 
     /* Header Title Formatting */
@@ -90,23 +100,13 @@ st.markdown("""
         border-bottom-color: #C8102E !important;
     }
 
-    /* Header Watermark Styling */
-    .header-watermark {
-        font-size: 13px !important;
-        color: #94A3B8 !important; /* Muted Slate */
-        letter-spacing: 2px !important;
-        text-transform: uppercase;
-        margin-bottom: 6px;
-        font-weight: 600;
-    }
-
     /* Footer Watermark Styling */
     .footer-watermark {
         text-align: center;
-        font-size: 14px !important;
+        font-size: 15px !important;
         color: #64748B !important;
         letter-spacing: 1.5px !important;
-        padding: 25px 0 15px 0;
+        padding: 20px 0 10px 0;
     }
     .footer-watermark a {
         color: #1D428A !important; /* NBA Blue */
@@ -242,16 +242,17 @@ if csv_available:
     CSV_PLAYERS_BY_TEAM = {code: sorted(df_csv[df_csv['team'] == code]['player'].unique()) for code in csv_teams}
 
 
-# --- 3. TOP SPLIT LAYOUT (HEADER WATERMARK ADDED) ---
+# --- 3. TOP SPLIT LAYOUT (LEFT HEADER + RIGHT BIG LOGO + WATERMARK) ---
 top_left, top_right = st.columns([3, 1], gap="medium")
 
 with top_left:
+    # Small inline logo tag for title
     if logo_b64:
         small_logo_tag = f'<img src="data:image/png;base64,{logo_b64}" style="height: 40px; margin-right: 12px; vertical-align: middle;">'
     else:
         small_logo_tag = '<span style="font-size: 38px; margin-right: 10px; vertical-align: middle;">🏀</span>'
 
-    # Render Header Watermark right above title
+    # Watermark, Title, and Subtitle block
     st.markdown(
         f'''
         <div class="header-watermark">ENGINEERED BY AFIQ HILMY | BASKETBALL ANALYTICS & PREDICTIVE MODELING</div>
@@ -259,21 +260,14 @@ with top_left:
             {small_logo_tag}
             <h1 class="main-header">NBA EXPECTED POINTS PER GAME (XPPG) PREDICTION</h1>
         </div>
-        <div class="sub-header" style="margin-bottom: 20px;">
+        <div class="sub-header" style="margin-bottom: 25px;">
             DECISION-SUPPORT SYSTEM FOR PLAYER BASELINE EVALUATION AND PLANNING PROJECTIONS.
         </div>
         ''', 
         unsafe_allow_html=True
     )
 
-    st.markdown("### ⚙️ SELECT MACHINE LEARNING MODEL")
-    selected_model_name = st.radio(
-        "CHOOSE ALGORITHM FOR EXPECTED SCORING BASELINE PREDICTION:",
-        ["Linear Regression", "Random Forest", "XGBoost"],
-        horizontal=True
-    )
-
-    # Model Selection block
+    # Model Selection Block
     st.markdown("### ⚙️ SELECT MACHINE LEARNING MODEL")
     selected_model_name = st.radio(
         "CHOOSE ALGORITHM FOR EXPECTED SCORING BASELINE PREDICTION:",
@@ -282,12 +276,12 @@ with top_left:
     )
 
 with top_right:
-    # Large logo on the right side spanning the top section height
+    # Large logo on the right side
     if logo_b64:
         st.markdown(
             f'''
             <div style="display: flex; justify-content: center; align-items: center; height: 100%; min-height: 200px;">
-                <img src="data:image/png;base64,{logo_b64}" style="height: 230px; width: auto; object-fit: contain;" alt="NBA Logo Large">
+                <img src="data:image/png;base64,{logo_b64}" style="height: 180px; width: auto; object-fit: contain;" alt="NBA Logo Large">
             </div>
             ''', 
             unsafe_allow_html=True
@@ -503,7 +497,7 @@ with page_tab2:
     st.markdown("---")
     render_model_eval_card(selected_model_name, active_metrics)
 
-# --- 5. FOOTER WATERMARK (ADD THIS AT THE VERY BOTTOM OF YOUR SCRIPT) ---
+# --- 5. FOOTER WATERMARK ---
 st.markdown("---")
 st.markdown(
     '''
