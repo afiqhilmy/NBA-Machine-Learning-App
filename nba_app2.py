@@ -44,6 +44,15 @@ st.markdown("""
         background-color: #F8FAFC; /* Off-White Slate Background */
     }
 
+    /* Flexbox Header Container to push Logo to far right */
+    .header-container {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        width: 100%;
+        margin-bottom: 20px;
+    }
+
     /* Header Container for Flexbox Alignment */
     .header-container {
         display: flex;
@@ -315,7 +324,7 @@ with page_tab1:
                 season_defaults[feat] = global_defaults.get(feat, 0.0)
         
         st.markdown("---")
-        st.markdown(f"### 2. Historical Career KPIs: {selected_player}")
+        st.markdown(f"### 2. Historical Career KPI: {selected_player}")
         
         player_df = player_df.copy()
         if 'Total_PTS' not in player_df.columns and {'PPG', 'GP'}.issubset(player_df.columns):
@@ -385,11 +394,11 @@ with page_tab1:
         
         res_col1, res_col2, res_col3 = st.columns(3)
         with res_col1:
-            st.metric("Expected Baseline (xPPG)", f"{predicted_ppg:.1f} PPG")
+            st.metric("Expected Points Per Game (xPPG)", f"{predicted_ppg:.1f} PPG")
         with res_col2:
-            st.metric("Actual Baseline", f"{actual_ppg:.1f} PPG")
+            st.metric("Actual Points Per Game", f"{actual_ppg:.1f} PPG")
         with res_col3:
-            st.metric("Points Over Expected (xPTS)", f"{xpts:+.1f} PPG")
+            st.metric("Points Over Expected", f"{xpts:+.1f} PPG")
             
         if xpts > 1.2:
             st.success("🔥 **Performance Status:** OUTPERFORMED baseline (Hyper-Efficient Scorer)")
