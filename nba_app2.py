@@ -294,7 +294,7 @@ with top_left:
     # Watermark, Title, and Subtitle block
     st.markdown(
         f'''
-        <div class="header-watermark">PREDICTIVE PLAYER ANALYTICS DASHBOARD BY AFIQ HILMY | SPORTS ANALYTICS ENTHUSIAST</div>
+        <div class="header-watermark">ANALYTICS AND MODELLING BY AFIQ HILMY | SPORTS ANALYTICS ENTHUSIAST</div>
         <div style="display: flex; align-items: center; margin-bottom: 6px;">
             {small_logo_tag}
             <h1 class="main-header">NBA EXPECTED POINTS PER GAME (XPPG) PREDICTION</h1>
