@@ -16,50 +16,59 @@ st.set_page_config(
     layout="wide"
 )
 
-# Custom CSS for clean UI styling and NBA Theme Customization
+# Custom CSS applying 'Bebas Neue' globally to all text elements
 st.markdown("""
     <style>
-    /* Import custom fonts from Google */
-    @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;600&family=Roboto+Mono:wght@500&display=swap');
+    /* Import Bebas Neue Google Font */
+    @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap');
 
-    /* Global Background & Default Text */
+    /* Force Bebas Neue on every single text, input, metric, and header element */
+    html, body, [class*="css"], *, p, div, span, label, h1, h2, h3, h4, h5, h6, input, button, table {
+        font-family: 'Bebas Neue', sans-serif !important;
+        letter-spacing: 1px;
+    }
+
+    /* Global Background */
     .stApp {
         background-color: #F8FAFC; /* Off-White Slate Background */
     }
-    
-    html, body, [class*="css"] {
-        font-family: 'Inter', sans-serif;
-        color: #0F172A; /* Midnight Slate Text */
-    }
 
-    /* Custom Header Styling */
+    /* Main Header Title */
     .main-header { 
-        font-family: 'Bebas Neue', sans-serif; 
-        font-size: 42px; 
+        font-family: 'Bebas Neue', sans-serif !important; 
+        font-size: 46px; 
         color: #1D428A; /* NBA Blue */
-        margin-bottom: 5px; 
+        margin-bottom: 0px; 
         letter-spacing: 1.5px;
     }
+
+    /* Sub-Header */
     .sub-header { 
-        font-family: 'Inter', sans-serif;
-        font-size: 16px; 
+        font-family: 'Bebas Neue', sans-serif !important;
+        font-size: 20px; 
         color: #64748B; 
         margin-bottom: 25px; 
     }
 
-    /* Metric Values and Monospace Numbers */
+    /* Metric Values & Labels */
     [data-testid="stMetricValue"] {
-        font-family: 'Roboto Mono', monospace;
-        color: #1D428A !important; /* NBA Blue for main metrics */
+        font-family: 'Bebas Neue', sans-serif !important;
+        font-size: 38px !important;
+        color: #1D428A !important; /* NBA Blue */
     }
     
+    [data-testid="stMetricLabel"] {
+        font-family: 'Bebas Neue', sans-serif !important;
+        font-size: 20px !important;
+    }
+
     /* Streamlit Tabs Styling */
     .stTabs [data-baseweb="tab-list"] {
         gap: 20px;
     }
     .stTabs [data-baseweb="tab"] {
-        font-family: 'Bebas Neue', sans-serif;
-        font-size: 20px;
+        font-family: 'Bebas Neue', sans-serif !important;
+        font-size: 24px;
         letter-spacing: 1px;
         color: #0F172A;
     }
