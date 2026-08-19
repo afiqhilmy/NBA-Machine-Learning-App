@@ -27,7 +27,7 @@ def get_image_base64(image_path):
 
 logo_b64 = get_image_base64("nbalogo.png")
 
-# Custom CSS applying 'Bebas Neue' globally to all text elements, watermarks & highlighted metric cards
+# Custom CSS applying 'Bebas Neue' globally & overriding Light/Dark system theme conflicts
 st.markdown("""
     <style>
     /* Import Bebas Neue Google Font */
@@ -39,9 +39,17 @@ st.markdown("""
         letter-spacing: 1px;
     }
 
-    /* Global Background */
-    .stApp {
-        background-color: #F8FAFC; /* Off-White Slate Background */
+    /* Global Light Background & Force Light Palette for Dark Mode Compatibility */
+    .stApp, [data-testid="stAppViewContainer"], [data-testid="stHeader"] {
+        background-color: #F8FAFC !important;
+        color: #0F172A !important;
+    }
+
+    /* Force All Markdown Text & Headers to Dark Slate */
+    p, span, label, h1, h2, h3, h4, h5, h6, 
+    [data-testid="stMarkdownContainer"] *, 
+    [data-testid="stWidgetLabel"] * {
+        color: #0F172A !important;
     }
 
     /* Header Watermark Styling with Bottom Line */
@@ -53,7 +61,7 @@ st.markdown("""
         margin-bottom: 12px;
         font-weight: 600;
         border-bottom: 1px solid #CBD5E1; /* Separator line */
-        padding-bottom: 6px; /* Space between text and line */
+        padding-bottom: 6px;
         width: 100%;
     }
 
@@ -61,7 +69,7 @@ st.markdown("""
     .main-header { 
         font-family: 'Bebas Neue', sans-serif !important; 
         font-size: 42px; 
-        color: #1D428A; /* NBA Blue */
+        color: #1D428A !important; /* NBA Blue */
         margin: 0; 
         letter-spacing: 1.5px;
         line-height: 1.1;
@@ -71,9 +79,47 @@ st.markdown("""
     .sub-header { 
         font-family: 'Bebas Neue', sans-serif !important;
         font-size: 20px; 
-        color: #64748B; 
+        color: #64748B !important; 
         margin-top: 6px; 
         margin-bottom: 0px;
+    }
+
+    /* Widget Labels & Radio Options Text Color */
+    div[data-testid="stRadioButton"] label p {
+        color: #0F172A !important;
+    }
+
+    /* Selectbox Input Overrides for Dark Mode Compatibility */
+    div[data-baseweb="select"] > div {
+        background-color: #FFFFFF !important;
+        border: 1px solid #CBD5E1 !important;
+        color: #0F172A !important;
+    }
+
+    div[data-baseweb="select"] * {
+        color: #0F172A !important;
+    }
+
+    /* Number Inputs & Sliders Styling */
+    div[data-testid="stNumberInput"] input {
+        background-color: #FFFFFF !important;
+        color: #0F172A !important;
+        border: 1px solid #CBD5E1 !important;
+    }
+
+    /* Streamlit Tabs Styling */
+    .stTabs [data-baseweb="tab-list"] {
+        gap: 20px;
+    }
+    .stTabs [data-baseweb="tab"] {
+        font-family: 'Bebas Neue', sans-serif !important;
+        font-size: 24px;
+        letter-spacing: 1px;
+        color: #64748B !important;
+    }
+    .stTabs [aria-selected="true"] {
+        color: #C8102E !important; /* NBA Red for active tab */
+        border-bottom-color: #C8102E !important;
     }
 
     /* Highlighted Key Metric Box */
@@ -88,7 +134,7 @@ st.markdown("""
     }
     .metric-card-highlight .metric-label {
         font-size: 16px !important;
-        color: #CBD5E1 !important; /* Soft Slate text */
+        color: #CBD5E1 !important;
         letter-spacing: 1.5px;
         margin-bottom: 2px;
         text-transform: uppercase;
@@ -102,8 +148,8 @@ st.markdown("""
     }
     .metric-card-highlight .metric-badge {
         display: inline-block;
-        background-color: #C8102E; /* NBA Red Badge */
-        color: #FFFFFF;
+        background-color: #C8102E;
+        color: #FFFFFF !important;
         font-size: 11px;
         padding: 2px 8px;
         border-radius: 4px;
@@ -112,31 +158,17 @@ st.markdown("""
         vertical-align: middle;
     }
 
-    /* Metric Values & Labels */
+    /* Standard Metric Values & Labels */
     [data-testid="stMetricValue"] {
         font-family: 'Bebas Neue', sans-serif !important;
         font-size: 38px !important;
-        color: #1D428A !important; /* NBA Blue */
+        color: #1D428A !important;
     }
     
     [data-testid="stMetricLabel"] {
         font-family: 'Bebas Neue', sans-serif !important;
         font-size: 20px !important;
-    }
-
-    /* Streamlit Tabs Styling */
-    .stTabs [data-baseweb="tab-list"] {
-        gap: 20px;
-    }
-    .stTabs [data-baseweb="tab"] {
-        font-family: 'Bebas Neue', sans-serif !important;
-        font-size: 24px;
-        letter-spacing: 1px;
-        color: #0F172A;
-    }
-    .stTabs [aria-selected="true"] {
-        color: #C8102E !important; /* NBA Red for active tab */
-        border-bottom-color: #C8102E !important;
+        color: #475569 !important;
     }
 
     /* Footer Watermark Styling */
@@ -148,7 +180,7 @@ st.markdown("""
         padding: 20px 0 10px 0;
     }
     .footer-watermark a {
-        color: #1D428A !important; /* NBA Blue */
+        color: #1D428A !important;
         text-decoration: none;
     }
     .footer-watermark a:hover {
@@ -294,7 +326,7 @@ with top_left:
     # Watermark, Title, and Subtitle block
     st.markdown(
         f'''
-        <div class="header-watermark">ANALYTICS AND MODELLING BY AFIQ HILMY | SPORTS ANALYTICS ENTHUSIAST</div>
+        <div class="header-watermark">PREDICTIVE PLAYER ANALYTICS DASHBOARD BY AFIQ HILMY | SPORTS ANALYTICS ENTHUSIAST</div>
         <div style="display: flex; align-items: center; margin-bottom: 6px;">
             {small_logo_tag}
             <h1 class="main-header">NBA EXPECTED POINTS PER GAME (XPPG) PREDICTION</h1>
@@ -459,16 +491,16 @@ with page_tab1:
             st.markdown(
                 f'''
                 <div class="metric-card-highlight">
-                    <div class="metric-label">EXPECTED POINTS PER GAME (XPPG) <span class="metric-badge">PRIMARY</span></div>
+                    <div class="metric-label">EXPECTED BASELINE (XPPG) <span class="metric-badge">PRIMARY</span></div>
                     <div class="metric-value">{predicted_ppg:.1f} PPG</div>
                 </div>
                 ''',
                 unsafe_allow_html=True
             )
         with res_col2:
-            st.metric("Actual Points Per Game", f"{actual_ppg:.1f} PPG")
+            st.metric("Actual Baseline", f"{actual_ppg:.1f} PPG")
         with res_col3:
-            st.metric("Points Over Expected", f"{xpts:+.1f} PPG")
+            st.metric("Points Over Expected (xPTS)", f"{xpts:+.1f} PPG")
             
         if xpts > 1.2:
             st.success("🔥 **Performance Status:** OUTPERFORMED baseline (Hyper-Efficient Scorer)")
