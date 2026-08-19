@@ -428,6 +428,7 @@ with page_tab1:
         kpi_display = player_df[cols_to_show].copy()
         if 'team' in kpi_display.columns:
             kpi_display['team'] = kpi_display['team'].map(TEAM_FULL_NAMES)
+        
         rename_map = {}
         if 'season' in kpi_display.columns: rename_map['season'] = 'Season'
         if 'team' in kpi_display.columns: rename_map['team'] = 'Team'
@@ -436,7 +437,20 @@ with page_tab1:
         if 'MPG' in kpi_display.columns: rename_map['MPG'] = 'Minutes Played (MPG)'
         if 'GP' in kpi_display.columns: rename_map['GP'] = 'Games Played'
         kpi_display = kpi_display.rename(columns=rename_map)
-        st.dataframe(kpi_display, use_container_width=True, hide_index=True)
+
+        # Round all float columns to 2 decimal places
+        float_cols = kpi_display.select_dtypes(include=['float', 'float64']).columns
+        kpi_display[float_cols] = kpi_display[float_cols].round(2)
+
+        st.dataframe(
+            kpi_display, 
+            use_container_width=True, 
+            hide_index=True,
+            column_config={
+                "PPG": st.column_config.NumberColumn(format="%.2f"),
+                "Minutes Played (MPG)": st.column_config.NumberColumn(format="%.2f")
+            }
+        )
         
         st.markdown("---")
         st.markdown("### 3. Input Player Workload & Metrics")
